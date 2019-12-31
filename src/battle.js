@@ -2,7 +2,25 @@
 const p1 = { name: 'Spartacus', lvl: 10, maxhp: 300, hp: 300, str: 20, dex: 10, agi: 15, weapon: 10, ac: 10 };
 const p2 = { name: 'Gannicus', lvl: 10, maxhp: 300, hp: 300, str: 5, dex: 5, agi: 10, weapon: 10, ac: 30 };
 
-const fight = (p1, p2) => {
+export const simulateBattle = (p1, p2) => {
+  
+let p1wins = 0;
+
+for (let i = 0; i < 10000; i++) {
+  p1.hp = 100 + p1.lvl * p1.sta;
+  p2.hp = 100 + p2.lvl * p2.sta;
+  fight(p1, p2);
+  if (p1.hp > 0) {
+    p1wins++; 
+  }
+  p1.hp = 100 + p1.lvl * p1.sta;
+  p2.hp = 100 + p2.lvl * p2.sta;
+}
+
+return Math.round((p1wins / 10000) * 100);
+};
+
+function fight(p1, p2) {
   while (p1.hp > 0 && p2.hp > 0) {
     attackRound(p1, p2);
     if (p2.hp <= 0) {
@@ -16,20 +34,6 @@ const fight = (p1, p2) => {
     }
   }
 };
-
-let p1wins = 0;
-
-for (let i = 0; i < 10000; i++) {
-  fight(p1, p2);
-  if (p1.hp > 0) {
-    p1wins++; 
-  }
-  p1.hp = p1.maxhp;
-  p2.hp = p2.maxhp;
-}
-
-console.log(`${p1.name} won ${Math.round((p1wins / 10000) * 100)}% of the time.`);
-
 
 function attackRound(p1, p2) {
   const d1 = calculateDamage(p1, p2);
