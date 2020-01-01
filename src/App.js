@@ -10,16 +10,40 @@ function StatSlider(props) {
   return (
     <tr>
       <td>{name}</td>
-      <input type="range" min="1" max="50" value={val} onClick={e => update(name, e.target.value)} 
+      <input type="range" min="0" max="50" value={val} onClick={e => update(name, e.target.value)} 
         onChange={e => update(name, e.target.value)} />
       <td>{val}</td>
     </tr>
   );
 }
 
+function DamageDistributionChart(props) {
+  const { name, data } = props;
+  const options = { 
+    chart: {
+      height   : 200,
+      width    : 300,
+      animation: false,
+    },
+    title: {
+      text: `${name} damage distribution`,
+    },
+    series: [{
+      name: 'Percent chance',
+      data,
+    }] };
+
+  return (
+    <HighchartsReact
+      highcharts={Highcharts}
+      options={options}
+    />
+  );
+}
+
 function App() {
-  const [p1, setp1] = useState({ name: 'Spartacus', lvl: 1, sta: 5, str: 5, dex: 5, agi: 5, weapon: 5, ac: 5 });
-  const [p2, setp2] = useState({ name: 'Gannicus', lvl: 1, sta: 5, str: 5, dex: 5, agi: 5, weapon: 5, ac: 5 });
+  const [p1, setp1] = useState({ name: 'Spartacus', lvl: 1, sta: 2, str: 3, dex: 2, agi: 3, weapon: 5, ac: 5 });
+  const [p2, setp2] = useState({ name: 'Gannicus', lvl: 1, sta: 2, str: 3, dex: 2, agi: 3, weapon: 5, ac: 5 });
 
   const [p1DmgData, setp1DmgData] = useState([]);
   const [p2DmgData, setp2DmgData] = useState([]);
@@ -74,37 +98,10 @@ function App() {
     return hc_data;
   };
 
-
-  const p1DmgOptions = { 
-    chart: {
-      height: 200,
-      width : 300,
-    },
-    title: {
-      text: `${p1.name} damage distribution`,
-    },
-    series: [{
-      name: 'Percent chance',
-      data: p1DmgData,
-    }] };
-
-  const p2DmgOptions = { 
-    chart: {
-      height: 200,
-      width : 300,
-    },
-    title: {
-      text: `${p2.name} damage distribution`,
-    },
-    series: [{
-      name: 'Percent chance',
-      data: p2DmgData,
-    }] };
-
-  // level 1 starts with 20 stat points and gains 5 per level.
+  // level 1 starts with 10 stat points and gains 3 per level.
   // given the current player's stats, this will return what level they would need to be to have those.
   const getLevel = p => {
-    return Math.ceil(1 + (Number(p.sta) + Number(p.str) + Number(p.dex) + Number(p.agi) - 20) / 5);
+    return Math.ceil(1 + (Number(p.sta) + Number(p.str) + Number(p.dex) + Number(p.agi) - 10) / 3);
   };
 
   return (
@@ -141,14 +138,13 @@ function App() {
       </table>
       <div>{`${p1.name} win: ${battleResult[p1.name]}%`}</div>
       <div>{`${p2.name} win: ${battleResult[p2.name]}%`}</div>
-      <HighchartsReact
-        highcharts={Highcharts}
-        options={p1DmgOptions}
+      <DamageDistributionChart 
+        name={p1.name}
+        data={p1DmgData}
       />
-      <HighchartsReact
-        height="50"
-        highcharts={Highcharts}
-        options={p2DmgOptions}
+      <DamageDistributionChart 
+        name={p2.name}
+        data={p2DmgData}
       />
     </div>
   );
