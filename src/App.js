@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
 import './App.css';
-import { simulateBattle, calculateDamage, getMaxHp } from './battle';
+import { simulateBattle, getMaxHp } from './battle';
 
 function StatSlider(props) {
   const { name, val, update } = props;
@@ -22,29 +21,55 @@ function App() {
   const [p1, setp1] = useState({ name: 'Spartacus', lvl: 1, sta: 5, str: 5, dex: 5, agi: 5, weapon: 5, ac: 5 });
   const [p2, setp2] = useState({ name: 'Gannicus', lvl: 1, sta: 5, str: 5, dex: 5, agi: 5, weapon: 5, ac: 5 });
 
-  const [p1WinPct, setp1WinPct] = useState(simulateBattle(p1, p2));
+  const [p1DmgData, setp1DmgData] = useState([]);
+  const [p2DmgData, setp2DmgData] = useState([]);
+
+  const [battleResult, setBattleResult] = useState({});
+
+  useEffect(() => {
+    updatep1('str', p1.str);
+  }, []);
 
   const updatep1 = (name, value) => {
     setp1({ ...p1, [name]: value, lvl: getLevel(p1) });
-    setp1WinPct(simulateBattle(p1, p2));
+    const result = simulateBattle(p1, p2, 10000);
+    setBattleResult(result);
+    const p1Dmg = [];
+    const p2Dmg = [];
+    result.logs.forEach(l => {
+      if (l.name === p1.name) {
+        p1Dmg.push(l.dmg);
+      } else {
+        p2Dmg.push(l.dmg);
+      }
+    });
+    setp1DmgData(getHcData(p1Dmg));
+    setp2DmgData(getHcData(p2Dmg));
   };
 
   const updatep2 = (name, value) => {
     setp2({ ...p2, [name]: value, lvl: getLevel(p2) });
-    setp1WinPct(simulateBattle(p1, p2));
+    const result = simulateBattle(p1, p2, 10000);
+    setBattleResult(result);
+    const p1Dmg = [];
+    const p2Dmg = [];
+    result.logs.forEach(l => {
+      if (l.name === p1.name) {
+        p1Dmg.push(l.dmg);
+      } else {
+        p2Dmg.push(l.dmg);
+      }
+    });
+    setp1DmgData(getHcData(p1Dmg));
+    setp2DmgData(getHcData(p2Dmg));
   };
 
-  const updateDmg = () => {
-    const n = 10000;
-    const rawValues = [];
-    for (let i = 0; i < n; i++) {
-      rawValues.push(calculateDamage(p1, p2));
-    }
+  const getHcData = rawValues => {
     rawValues.sort((a, b) => a - b);
 
     const data = {};
     const min = rawValues[0];
-    const max = rawValues[n - 1];
+    const max = rawValues[rawValues.length - 1];
 
     // Seed data with a bunch of 0s
     for (let i = min; i < max; i++) {
@@ -58,32 +83,38 @@ function App() {
     // Count number of samples at each increment
     let hc_data = [];
     for (const [key, val] of Object.entries(data)) {
-      hc_data.push({ 'x': parseFloat(key), 'y': val / n });
+      hc_data.push({ 'x': parseFloat(key), 'y': val / rawValues.length });
     }
-
-    setDmgData(hc_data);
+    return hc_data;
   };
 
-  const [dmgData, setDmgData] = useState([1, 2, 3]);
 
-  const options = { 
+  const p1DmgOptions = { 
+    chart: {
+      height: 200,
+      width : 300,
+    },
     title: {
-      text: 'Normal Distribution',
-    },
-    yAxis: {
-      title: {
-        text: 'Percentage chance',
-      },
-    },
-    plotOptions: {
+      text: `${p1.name} damage distribution`,
     },
     series: [{
       name: 'Percent chance',
-      data: dmgData,
+      data: p1DmgData,
     }] };
 
+  const p2DmgOptions = { 
+    chart: {
+      height: 200,
+      width : 300,
+    },
+    title: {
+      text: `${p2.name} damage distribution`,
+    },
+    series: [{
+      name: 'Percent chance',
+      data: p2DmgData,
+    }] };
 
-  
   // level 1 starts with 20 stat points and gains 5 per level.
   // given the current player's stats, this will return what level they would need to be to have those.
   const getLevel = p => {
@@ -122,13 +153,16 @@ function App() {
           </td>
         </tr>
       </table>
-      <div>{`${p1.name} will win: ${p1WinPct}% of the time.`}</div>
-      <div>
-        <button onClick={updateDmg}>Damage Avg</button>
-      </div>
+      <div>{`${p1.name} win: ${battleResult[p1.name]}%`}</div>
+      <div>{`${p2.name} win: ${battleResult[p2.name]}%`}</div>
       <HighchartsReact
         highcharts={Highcharts}
-        options={options}
+        options={p1DmgOptions}
+      />
+      <HighchartsReact
+        height="50"
+        highcharts={Highcharts}
+        options={p2DmgOptions}
       />
     </div>
   );

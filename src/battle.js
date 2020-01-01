@@ -1,21 +1,26 @@
 
 
-export const simulateBattle = (p1, p2) => {
-  
+export const simulateBattle = (p1, p2, n) => {
   let p1wins = 0;
-
-  for (let i = 0; i < 10000; i++) {
+  const logs = [];
+  for (let i = 0; i < n; i++) {
     p1.hp = getMaxHp(p1);
     p2.hp = getMaxHp(p2);
-    fight(p1, p2);
+    logs.push(...fight(p1, p2));
     if (p1.hp > 0) {
-      p1wins++; 
+      p1wins++;
     }
-    p1.hp = getMaxHp(p1);
-    p2.hp = getMaxHp(p2);
   }
 
-  return Math.round((p1wins / 10000) * 100);
+  const p1WinPct = Math.round((p1wins / n) * 100);
+
+  const result = {
+    [p1.name]: p1WinPct,
+    [p2.name]: 100 - p1WinPct,
+    logs,
+  };
+
+  return result;
 };
 
 export const calculateDamage = (attacker, defender) => {
@@ -37,26 +42,21 @@ export const calculateDamage = (attacker, defender) => {
 
 export const getMaxHp = p => Math.round(25 + p.lvl * 5 + (1 + 0.1 * p.lvl) * p.sta);
 
-
 function fight(p1, p2) {
+  const log = [];
   while (p1.hp > 0 && p2.hp > 0) {
-    p2.hp -= calculateDamage(p1, p2);
+    const d1 = calculateDamage(p1, p2);
+    log.push({ 'name': p1.name, 'dmg': d1 });
+    p2.hp -= d1;
     if (p2.hp <= 0) {
       break;
     }
-    p1.hp -= calculateDamage(p2, p1);
-    if (p1.hp <= 0) {
-      break;
-    }
+    const d2 = calculateDamage(p2, p1);
+    log.push({ 'name': p2.name, 'dmg': d2 });
+    p1.hp -= d2;
   }
+  return log;
 }
-
-function attackRound(p1, p2) {
-  const d1 = calculateDamage(p1, p2);
-  // console.log(d1 === 0 ? `${p1.name} tried to hit ${p2.name}, but missed!` : `${p1.name} hit ${p2.name} for ${d1} damage!`);
-  p2.hp -= d1;
-}
-
 
 // Normal distribution with min, max, skew
 // https://jsfiddle.net/ktq9jaoe/4/
