@@ -30,8 +30,8 @@ export const calculateDamage = (attacker, defender) => {
     return 0;
   }
 
-  const weaponMod	=	7.928 + 0.14210 * attacker.weapon;
-  const strVsAcMod = 1.0070 + 0.011422 * attacker.str - 0.011120 * defender.ac;
+  const weaponMod	=	8 + 0.3 * attacker.weapon;
+  const strVsAcMod = 1 + 0.03 * attacker.str - 0.03 * defender.ac;
   const base = randn_bm(0, 1, 0.75) * weaponMod; 
 
   // apply modifier based on regression model for strength
@@ -40,9 +40,11 @@ export const calculateDamage = (attacker, defender) => {
   return Math.round(damage);
 };
 
+// formula for max hp is based on lvl and sta
 export const getMaxHp = p => Math.round(25 + p.lvl * 5 + (1 + 0.1 * p.lvl) * p.sta);
 
 function fight(p1, p2) {
+  // give each fighter a 50/50 chance to have the first swing
   if (Math.random() > 0.5) {
     [p1, p2] = [p2, p1];
   }
