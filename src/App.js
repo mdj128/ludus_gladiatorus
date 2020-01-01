@@ -27,11 +27,6 @@ function App() {
   const [battleResult, setBattleResult] = useState({});
 
   useEffect(() => {
-    updatep1('str', p1.str);
-  }, []);
-
-  const updatep1 = (name, value) => {
-    setp1({ ...p1, [name]: value, lvl: getLevel(p1) });
     const result = simulateBattle(p1, p2, 10000);
     setBattleResult(result);
     const p1Dmg = [];
@@ -45,23 +40,14 @@ function App() {
     });
     setp1DmgData(getHcData(p1Dmg));
     setp2DmgData(getHcData(p2Dmg));
+  }, [p1, p2]);
+
+  const updatep1 = (name, value) => {
+    setp1({ ...p1, [name]: value, lvl: getLevel(p1) });
   };
 
   const updatep2 = (name, value) => {
     setp2({ ...p2, [name]: value, lvl: getLevel(p2) });
-    const result = simulateBattle(p1, p2, 10000);
-    setBattleResult(result);
-    const p1Dmg = [];
-    const p2Dmg = [];
-    result.logs.forEach(l => {
-      if (l.name === p1.name) {
-        p1Dmg.push(l.dmg);
-      } else {
-        p2Dmg.push(l.dmg);
-      }
-    });
-    setp1DmgData(getHcData(p1Dmg));
-    setp2DmgData(getHcData(p2Dmg));
   };
 
   const getHcData = rawValues => {
