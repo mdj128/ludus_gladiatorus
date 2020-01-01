@@ -4,27 +4,19 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
 import './App.css';
-import { simulateBattle } from './battle';
+import { simulateBattle, calculateDamage } from './battle';
 
 function StatSlider(props) {
   const { name, val, update } = props;
   return (
     <tr>
       <td>{name}</td>
-      <input type="range" min="1" max="50" value={val} onChange={e => update(name, e.target.value)} />
+      <input type="range" min="1" max="50" value={val} onClick={e => update(name, e.target.value)} 
+        onChange={e => update(name, e.target.value)} />
       <td>{val}</td>
     </tr>
   );
 }
-
-const options = {
-  title: {
-    text: 'My chart',
-  },
-  series: [{
-    data: [1, 2, 3],
-  }],
-};
 
 function App() {
   const [p1, setp1] = useState({ name: 'Spartacus', lvl: 10, sta: 5, str: 5, dex: 5, agi: 5, weapon: 5, ac: 5 });
@@ -41,6 +33,56 @@ function App() {
     setp2({ ...p2, [name]: value });
     setp1WinPct(simulateBattle(p1, p2));
   };
+
+  const updateDmg = () => {
+    const n = 10000;
+    const rawValues = [];
+    for (let i = 0; i < n; i++) {
+      rawValues.push(calculateDamage(p1, p2));
+    }
+    rawValues.sort((a, b) => a - b);
+
+    const data = {};
+    const min = rawValues[0];
+    const max = rawValues[n - 1];
+
+    // Seed data with a bunch of 0s
+    for (let i = min; i < max; i++) {
+      data[i] = 0;
+    }
+    
+    rawValues.forEach(v => {
+      data[v]++;
+    });
+
+    // Count number of samples at each increment
+    let hc_data = [];
+    for (const [key, val] of Object.entries(data)) {
+      hc_data.push({ 'x': parseFloat(key), 'y': val / n });
+    }
+
+    setDmgData(hc_data);
+  };
+
+  const [dmgData, setDmgData] = useState([1, 2, 3]);
+
+  const options = { 
+    title: {
+      text: 'Normal Distribution',
+    },
+    yAxis: {
+      title: {
+        text: 'Percentage chance',
+      },
+    },
+    plotOptions: {
+    },
+    series: [{
+      name: 'Percent chance',
+      data: dmgData,
+    }] };
+
+
   
   // level 1 starts with 20 stat points and gains 5 per level.
   // given the current player's stats, this will return what level they would need to be to have those.
@@ -81,6 +123,9 @@ function App() {
         </tr>
       </table>
       <div>{`${p1.name} will win: ${p1WinPct}% of the time.`}</div>
+      <div>
+        <button onClick={updateDmg}>Damage Avg</button>
+      </div>
       <HighchartsReact
         highcharts={Highcharts}
         options={options}

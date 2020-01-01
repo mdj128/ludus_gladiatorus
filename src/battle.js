@@ -20,16 +20,31 @@ export const simulateBattle = (p1, p2) => {
   return Math.round((p1wins / 10000) * 100);
 };
 
+export const calculateDamage = (attacker, defender) => {
+  // first roll for miss based on agi and dex
+  const missPct = 0.1980 - 0.003790 * attacker.dex + 0.004323 * defender.agi;
+  if (Math.random() <= missPct) {
+    return 0;
+  }
+
+  const weaponMod	=	7.928 + 0.14210 * attacker.weapon;
+  const strVsAcMod = 1.0070 + 0.011422 * attacker.str - 0.011120 * defender.ac;
+  const base = randn_bm(0, 1, 0.75) * weaponMod; 
+
+  // apply modifier based on regression model for strength
+  const damage = base * strVsAcMod;
+
+  return Math.round(damage);
+};
+
 function fight(p1, p2) {
   while (p1.hp > 0 && p2.hp > 0) {
-    attackRound(p1, p2);
+    p2.hp -= calculateDamage(p1, p2);
     if (p2.hp <= 0) {
-      // console.log(`${p1.name} has defeated ${p2.name}!`);
       break;
     }
-    attackRound(p2, p1);
+    p1.hp -= calculateDamage(p2, p1);
     if (p1.hp <= 0) {
-      // console.log(`${p2.name} has defeated ${p1.name}!`);
       break;
     }
   }
@@ -41,26 +56,10 @@ function attackRound(p1, p2) {
   p2.hp -= d1;
 }
 
-function calculateDamage(attacker, defender) {
-  // first roll for miss based on agi and dex
-  const missPct = 0.1980 - 0.003790 * attacker.dex + 0.004323 * defender.agi;
-  if (Math.random() <= missPct) {
-    return 0;
-  }
-
-  const weaponMod	=	7.928 + 0.14210 * attacker.weapon;
-  const strVsAcMod = 1.0070 + 0.011422 * attacker.str - 0.011120 * defender.ac;
-  const base = Math.random() * weaponMod; 
-
-  // apply modifier based on regression model for strength
-  const damage = base * strVsAcMod;
-
-  return Math.round(damage);
-}
 
 // Normal distribution with min, max, skew
 // https://jsfiddle.net/ktq9jaoe/4/
-function randn_bm(min, max, skew, whole = true) {
+function randn_bm(min, max, skew) {
   let u = 0, v = 0;
   while (u === 0) {
     u = Math.random();
@@ -77,5 +76,5 @@ function randn_bm(min, max, skew, whole = true) {
   num = Math.pow(num, skew); // Skew
   num *= max - min; // Stretch to fill range
   num += min; // offset to min
-  return whole ? Math.round(num) : num;
+  return num;
 }
