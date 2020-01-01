@@ -4,20 +4,20 @@ const p2 = { name: 'Gannicus', lvl: 10, maxhp: 300, hp: 300, str: 5, dex: 5, agi
 
 export const simulateBattle = (p1, p2) => {
   
-let p1wins = 0;
+  let p1wins = 0;
 
-for (let i = 0; i < 10000; i++) {
-  p1.hp = 100 + p1.lvl * p1.sta;
-  p2.hp = 100 + p2.lvl * p2.sta;
-  fight(p1, p2);
-  if (p1.hp > 0) {
-    p1wins++; 
+  for (let i = 0; i < 10000; i++) {
+    p1.hp = 100 + p1.lvl * p1.sta;
+    p2.hp = 100 + p2.lvl * p2.sta;
+    fight(p1, p2);
+    if (p1.hp > 0) {
+      p1wins++; 
+    }
+    p1.hp = 100 + p1.lvl * p1.sta;
+    p2.hp = 100 + p2.lvl * p2.sta;
   }
-  p1.hp = 100 + p1.lvl * p1.sta;
-  p2.hp = 100 + p2.lvl * p2.sta;
-}
 
-return Math.round((p1wins / 10000) * 100);
+  return Math.round((p1wins / 10000) * 100);
 };
 
 function fight(p1, p2) {
@@ -33,7 +33,7 @@ function fight(p1, p2) {
       break;
     }
   }
-};
+}
 
 function attackRound(p1, p2) {
   const d1 = calculateDamage(p1, p2);
