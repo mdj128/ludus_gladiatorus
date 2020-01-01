@@ -43,6 +43,9 @@ export const calculateDamage = (attacker, defender) => {
 export const getMaxHp = p => Math.round(25 + p.lvl * 5 + (1 + 0.1 * p.lvl) * p.sta);
 
 function fight(p1, p2) {
+  if (Math.random() > 0.5) {
+    [p1, p2] = [p2, p1];
+  }
   const log = [];
   while (p1.hp > 0 && p2.hp > 0) {
     const d1 = calculateDamage(p1, p2);
