@@ -4,7 +4,7 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
 import './App.css';
-import { simulateBattle, calculateDamage } from './battle';
+import { simulateBattle, calculateDamage, getMaxHp } from './battle';
 
 function StatSlider(props) {
   const { name, val, update } = props;
@@ -19,18 +19,18 @@ function StatSlider(props) {
 }
 
 function App() {
-  const [p1, setp1] = useState({ name: 'Spartacus', lvl: 10, sta: 5, str: 5, dex: 5, agi: 5, weapon: 5, ac: 5 });
-  const [p2, setp2] = useState({ name: 'Gannicus', lvl: 10, sta: 5, str: 5, dex: 5, agi: 5, weapon: 5, ac: 5 });
+  const [p1, setp1] = useState({ name: 'Spartacus', lvl: 1, sta: 5, str: 5, dex: 5, agi: 5, weapon: 5, ac: 5 });
+  const [p2, setp2] = useState({ name: 'Gannicus', lvl: 1, sta: 5, str: 5, dex: 5, agi: 5, weapon: 5, ac: 5 });
 
   const [p1WinPct, setp1WinPct] = useState(simulateBattle(p1, p2));
 
   const updatep1 = (name, value) => {
-    setp1({ ...p1, [name]: value });
+    setp1({ ...p1, [name]: value, lvl: getLevel(p1) });
     setp1WinPct(simulateBattle(p1, p2));
   };
 
   const updatep2 = (name, value) => {
-    setp2({ ...p2, [name]: value });
+    setp2({ ...p2, [name]: value, lvl: getLevel(p2) });
     setp1WinPct(simulateBattle(p1, p2));
   };
 
@@ -87,7 +87,7 @@ function App() {
   // level 1 starts with 20 stat points and gains 5 per level.
   // given the current player's stats, this will return what level they would need to be to have those.
   const getLevel = p => {
-    return 1 + (Number(p.sta) + Number(p.str) + Number(p.dex) + Number(p.agi) - 20) / 5;
+    return Math.ceil(1 + (Number(p.sta) + Number(p.str) + Number(p.dex) + Number(p.agi) - 20) / 5);
   };
 
   return (
@@ -104,7 +104,7 @@ function App() {
             <StatSlider name="sta" val={p1.sta} update={updatep1} />
             <StatSlider name="ac" val={p1.ac} update={updatep1} />
             <StatSlider name="weapon" val={p1.weapon} update={updatep1} />
-            <tr><td>{`hp: ${100 + p1.lvl * p1.sta}`}</td></tr>
+            <tr><td>{`hp: ${getMaxHp(p1)}`}</td></tr>
             <tr><td>{`lvl: ${getLevel(p1)}`}</td></tr>
           </td>
           <td>
@@ -117,7 +117,7 @@ function App() {
             <StatSlider name="sta" val={p2.sta} update={updatep2} />
             <StatSlider name="ac" val={p2.ac} update={updatep2} />
             <StatSlider name="weapon" val={p2.weapon} update={updatep2} />
-            <tr><td>{`hp: ${100 + p2.lvl * p2.sta}`}</td></tr>
+            <tr><td>{`hp: ${getMaxHp(p2)}`}</td></tr>
             <tr><td>{`lvl: ${getLevel(p2)}`}</td></tr>
           </td>
         </tr>

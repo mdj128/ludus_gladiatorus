@@ -1,20 +1,18 @@
 
-const p1 = { name: 'Spartacus', lvl: 10, maxhp: 300, hp: 300, str: 20, dex: 10, agi: 15, weapon: 10, ac: 10 };
-const p2 = { name: 'Gannicus', lvl: 10, maxhp: 300, hp: 300, str: 5, dex: 5, agi: 10, weapon: 10, ac: 30 };
 
 export const simulateBattle = (p1, p2) => {
   
   let p1wins = 0;
 
   for (let i = 0; i < 10000; i++) {
-    p1.hp = 100 + p1.lvl * p1.sta;
-    p2.hp = 100 + p2.lvl * p2.sta;
+    p1.hp = getMaxHp(p1);
+    p2.hp = getMaxHp(p2);
     fight(p1, p2);
     if (p1.hp > 0) {
       p1wins++; 
     }
-    p1.hp = 100 + p1.lvl * p1.sta;
-    p2.hp = 100 + p2.lvl * p2.sta;
+    p1.hp = getMaxHp(p1);
+    p2.hp = getMaxHp(p2);
   }
 
   return Math.round((p1wins / 10000) * 100);
@@ -36,6 +34,9 @@ export const calculateDamage = (attacker, defender) => {
 
   return Math.round(damage);
 };
+
+export const getMaxHp = p => Math.round(25 + p.lvl * 5 + (1 + 0.1 * p.lvl) * p.sta);
+
 
 function fight(p1, p2) {
   while (p1.hp > 0 && p2.hp > 0) {
