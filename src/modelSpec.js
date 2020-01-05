@@ -1,15 +1,46 @@
+import _ from 'lodash';
+import { getRandomInt } from './statHelpers';
+
+export const getNewLudus = () => {
+  const ludus = { ...Ludus };
+  return ludus;
+};
+
+export const generateCalendar = (ludus, numDays) => {
+  const avgGladiatorLvl = ludus.gladiators.length > 0 ? _.sumBy(ludus.gladiators, 'lvl') / ludus.gladiators.length : 1;
+  for (let i = 0; i < numDays; i++) {
+    const day = { ... Day };
+    day.id = ludus.days.length ? (ludus.days[ludus.days.length - 1].id + 1) % 7 : 1;
+    const numEvents = getRandomInt(1, 4);
+    for (let j = 0; j < numEvents; j++) {
+      const event = { ...Event };
+      const numMatches = getRandomInt(1, 5);
+      for (let k = 0; k < numMatches; k++) {
+
+      }
+    }
+  }
+};
+
+// Generates a random gladiator within the given bounds
+export const generateGladiator = (minLvl, maxLvl) => {
+
+};
+
 const Ludus = {
   name                : 'My Ludus', 
   prestige            : 1, // increase by winning matches, paying off politicians/dignitaries
   gladiators          : [], 
   capacity            : 5, // maybe max starts out at 5, and you can upgrade to hold more gladiators
-  calendar            : {},
   denarii             : 100,
   medLevel            : 1, // Affects daily cost, improves recovery speed
   trainingGroundsLevel: 1, // Affects daily cost, improves training speed
   doctore             : {}, // you can turn any of your gladiators into a doctore, improves training speed, morale, etc.
   dailyCost           : 1, // this will need to be based on a number of variables: servants, gladiators, levels of ludus categories
   nutritionLevel      : 1, // Meager, Simple, Standard, Fulfilling, Extravagant. Affects daily cost, improves morale, training, recovery, etc.
+  inventory           : [], // extra items that are not equipped on anyone
+  calendar            : {},
+  market              : {},  
 };
 
 const Calendar = {
@@ -88,12 +119,14 @@ const Gladiator = {
   legs            : {},
   restDays        : 0, // after a match, gladiator needs x number of days of rest before he can fight again
   morale          : 5, // maybe 1-10? drops after loss. can increase with wine/women/food/etc.
+  dailyAction     : '', // what the gladiator is assigned to do today (rest, train, fight in a match)
 };
 
 const Armor = {
-  type: 'head', // legs, chest
-  ac  : 1,
-  name: 'Cloth Hat',
+  type  : 'head', // legs, chest
+  ac    : 1,
+  name  : 'Cloth Hat',
+  minLvl: 1,
 };
 
 const Weapon = {
@@ -101,4 +134,5 @@ const Weapon = {
   name     : 'Wooden Sword',
   cost     : 5,
   sellValue: 3,
+  minLvl   : 1,
 };

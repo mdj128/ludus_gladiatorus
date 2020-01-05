@@ -8,6 +8,9 @@ import { barbarian } from './nameGen';
 
 import Gladiator from './components/Gladiator';
 
+import { getNewLudus } from './modelSpec';
+import LudusView from './components/Ludus';
+
 function StatSlider(props) {
   const { name, val, update } = props;
   return (
@@ -84,6 +87,7 @@ function App() {
     const min = rawValues[0];
     const max = rawValues[rawValues.length - 1];
 
+
     // Seed data with a bunch of 0s
     for (let i = min; i < max; i++) {
       data[i] = 0;
@@ -102,6 +106,10 @@ function App() {
   };
 
   const names = barbarian(1);
+
+
+  const ludus1 = getNewLudus();
+  ludus1.name = 'Boalsburg';
 
   // level 1 starts with 10 stat points and gains 3 per level.
   // given the current player's stats, this will return what level they would need to be to have those.
@@ -152,6 +160,7 @@ function App() {
         name={p2.name}
         data={p2DmgData}
       />
+      <LudusView {...ludus1} />
     </div>
   );
 }

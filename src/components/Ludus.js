@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-function LudusView() {
+function LudusView(props) {
   return (
-    <div>View</div>
+    <div>{JSON.stringify(props, null, 2)}</div>
   );
 }
 
