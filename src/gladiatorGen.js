@@ -19,13 +19,13 @@ export const generateGladiator = (minLvl, maxLvl) => {
 
   // use normal distribution with skew to get mid points at 1/4 total, 1/3 remainder, 1/2 remainder
   const stat1 = Math.round(randn_bm(0, totalStatPoints, 2));
-  const stat2 = Math.round(randn_bm(0, totalStatPoints - stat1), 1.5);
-  const stat3 = Math.round(randn_bm(0, totalStatPoints - stat1 - stat2), 1);
+  const stat2 = Math.round(randn_bm(0, totalStatPoints - stat1, 1.5));
+  const stat3 = Math.round(randn_bm(0, totalStatPoints - stat1 - stat2, 1));
   const stat4 = totalStatPoints - stat1 - stat2 - stat3;
   
   // randomly shuffle the generated stats
   let [str, sta, dex, agi] = knuthShuffle([stat1, stat2, stat3, stat4]);
-  
+
   gladiator.str = str;
   gladiator.sta = sta;
   gladiator.dex = dex;
@@ -41,7 +41,7 @@ export function getGladiatorLevel(exp) {
 
 function getRandomName(origin) {
   // TODO: generate appropriate name given the origin
-  return barbarian(1);
+  return barbarian(1)[0];
 }
 
 function getRandomOrigin() {

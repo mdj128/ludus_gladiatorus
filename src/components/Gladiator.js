@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { getGladiatorLevel } from '../gladiatorGen';
 
-function Gladiator(props) {
-  const { name, lvl, sta, str, dex, agi, weapon, ac } = props;
+function GladiatorView(props) {
+  const { name, origin, exp, sta, str, dex, agi, restDays, morale } = props;
 
   return (
     <div>
@@ -10,8 +11,12 @@ function Gladiator(props) {
           <td>{name}</td>
         </tr>
         <tr>
+          <td>Origin:</td>
+          <td>{origin}</td>
+        </tr>
+        <tr>
           <td>Level:</td>
-          <td>{lvl}</td>
+          <td>{getGladiatorLevel(exp)}</td>
         </tr>
         <tr>
           <td>Strength:</td>
@@ -34,4 +39,4 @@ function Gladiator(props) {
   );
 }
 
-export default Gladiator;
+export default GladiatorView;

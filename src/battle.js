@@ -32,7 +32,7 @@ export const calculateDamage = (attacker, defender) => {
 
   const weaponMod	=	8 + 0.3 * attacker.weapon;
   const strVsAcMod = 1 + 0.03 * attacker.str - 0.03 * defender.ac;
-  const base = randn_bm(0, 1, 2) * weaponMod; 
+  const base = randn_bm(0, 1, 0.75) * weaponMod; 
 
   // apply modifier based on regression model for strength
   const damage = base * strVsAcMod;

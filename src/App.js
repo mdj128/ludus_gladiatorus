@@ -4,12 +4,9 @@ import HighchartsReact from 'highcharts-react-official';
 
 import './App.css';
 import { simulateBattle, getMaxHp } from './battle';
-import { barbarian } from './gladiatorGen';
+import { generateGladiator } from './gladiatorGen';
 
-import Gladiator from './components/Gladiator';
-
-import { getNewLudus } from './modelSpec';
-import LudusView from './components/Ludus';
+import GladiatorView from './components/Gladiator';
 
 function StatSlider(props) {
   const { name, val, update } = props;
@@ -50,6 +47,14 @@ function DamageDistributionChart(props) {
 function App() {
   const [p1, setp1] = useState({ name: 'Spartacus', lvl: 1, sta: 2, str: 3, dex: 2, agi: 3, weapon: 5, ac: 5 });
   const [p2, setp2] = useState({ name: 'Gannicus', lvl: 1, sta: 2, str: 3, dex: 2, agi: 3, weapon: 5, ac: 5 });
+  
+  const [randomGladiator, setRandomGladiator] = useState(generateGladiator(1, 50));
+  const [gladMin, setGladMin] = useState(1);
+  const [gladMax, setGladMax] = useState(50);
+
+  const updateRandomGladiator = () => {
+    setRandomGladiator(generateGladiator(gladMin, gladMax));
+  };
 
   const [p1DmgData, setp1DmgData] = useState([]);
   const [p2DmgData, setp2DmgData] = useState([]);
@@ -87,7 +92,6 @@ function App() {
     const min = rawValues[0];
     const max = rawValues[rawValues.length - 1];
 
-
     // Seed data with a bunch of 0s
     for (let i = min; i < max; i++) {
       data[i] = 0;
@@ -105,12 +109,6 @@ function App() {
     return hc_data;
   };
 
-  const names = barbarian(1);
-
-
-  const ludus1 = getNewLudus();
-  ludus1.name = 'Boalsburg';
-
   // level 1 starts with 10 stat points and gains 3 per level.
   // given the current player's stats, this will return what level they would need to be to have those.
   const getLevel = p => {
@@ -118,7 +116,7 @@ function App() {
   };
 
   return (
-    <div className="App">
+    <div>
       <table>
         <tr>
           <td>
@@ -148,19 +146,33 @@ function App() {
             <tr><td>{`lvl: ${getLevel(p2)}`}</td></tr>
           </td>
         </tr>
+        <tr>
+          <td>
+            <div>{`${p1.name} win: ${battleResult[p1.name]}%`}</div>
+            <div>{`${p2.name} win: ${battleResult[p2.name]}%`}</div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <DamageDistributionChart 
+              name={p1.name}
+              data={p1DmgData}
+            />
+          </td>
+          <td>
+            <DamageDistributionChart 
+              name={p2.name}
+              data={p2DmgData}
+            />
+          </td>
+        </tr>
       </table>
-      <div>{`${p1.name} win: ${battleResult[p1.name]}%`}</div>
-      <div>{`${p2.name} win: ${battleResult[p2.name]}%`}</div>
-      <div>{names.join(', ')}</div>
-      <DamageDistributionChart 
-        name={p1.name}
-        data={p1DmgData}
-      />
-      <DamageDistributionChart 
-        name={p2.name}
-        data={p2DmgData}
-      />
-      <LudusView {...ludus1} />
+      <div>
+        <button onClick={updateRandomGladiator}>New Gladiator</button>
+        <input onChange={e => setGladMin(e.target.value)} value={gladMin}/>
+        <input onChange={e => setGladMax(e.target.value)} value={gladMax}/>
+      </div>
+      <GladiatorView {...randomGladiator}/>
     </div>
   );
 }
