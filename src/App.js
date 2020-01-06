@@ -4,7 +4,7 @@ import HighchartsReact from 'highcharts-react-official';
 
 import './App.css';
 import { simulateBattle, getMaxHp } from './battle';
-import { barbarian } from './nameGen';
+import { barbarian } from './gladiatorGen';
 
 import Gladiator from './components/Gladiator';
 

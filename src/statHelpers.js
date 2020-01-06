@@ -25,3 +25,24 @@ export function randn_bm(min, max, skew) {
   num += min; // offset to min
   return num;
 }
+
+// Fisher-Yates (aka Knuth) random shuffle
+// https://bost.ocks.org/mike/shuffle/
+export function knuthShuffle(array) {
+  let currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}

@@ -1,3 +1,57 @@
+import { getRandomInt, randn_bm, knuthShuffle } from './statHelpers';
+import _ from 'lodash';
+
+const originCountries = ['Rome', 'Gaul', 'Germania', 'Greece', 'Brittania', 'Egypt', 'Hispania', 'Numidia'];
+
+const occupations = ['Farmer', 'Blacksmith', 'Tailor', 'Soldier', 'Sailor', 'Slave', 'Construction Worker', 'Pleb', 'Artist'];
+
+// Generates a random gladiator within the given bounds
+export const generateGladiator = (minLvl, maxLvl) => {
+  const gladiator = {};
+  gladiator.origin = getRandomOrigin();
+  gladiator.name = getRandomName(gladiator.origin);
+  gladiator.formerOccupation = getRandomOccupation();
+  const level = getRandomInt(minLvl, maxLvl);
+  gladiator.exp = levelSteps[level - 1];
+
+  // level 1 gladiator starts with 12 stat points and gains 3 per level
+  const totalStatPoints = 12 + (level - 1) * 3;
+
+  // use normal distribution with skew to get mid points at 1/4 total, 1/3 remainder, 1/2 remainder
+  const stat1 = Math.round(randn_bm(0, totalStatPoints, 2));
+  const stat2 = Math.round(randn_bm(0, totalStatPoints - stat1), 1.5);
+  const stat3 = Math.round(randn_bm(0, totalStatPoints - stat1 - stat2), 1);
+  const stat4 = totalStatPoints - stat1 - stat2 - stat3;
+  
+  // randomly shuffle the generated stats
+  let [str, sta, dex, agi] = knuthShuffle([stat1, stat2, stat3, stat4]);
+  
+  gladiator.str = str;
+  gladiator.sta = sta;
+  gladiator.dex = dex;
+  gladiator.agi = agi;
+  gladiator.morale = 5;
+  gladiator.restDays = 0;
+  return gladiator;
+};
+
+export function getGladiatorLevel(exp) {
+  return _.findIndex(levelSteps, x => x >= exp) + 1;
+}
+
+function getRandomName(origin) {
+  // TODO: generate appropriate name given the origin
+  return barbarian(1);
+}
+
+function getRandomOrigin() {
+  return originCountries[getRandomInt(0, originCountries.length - 1)];
+}
+
+function getRandomOccupation() {
+  return occupations[getRandomInt(0, occupations.length - 1)];
+}
+
 let nm1 = ['ae', 'au', 'ei', 'a', 'e', 'i', 'o', 'u', 'a', 'e', 'i', 'o', 'u', 'a', 'e', 'i', 'o', 'u']; 
 let nm2 = ['', '', '', 'b', 'bl', 'br', 'bh', 'd', 'dr', 'dh', 'f', 'fr', 'g', 'gh', 'gr', 'gl', 'h', 'hy', 'hr', 'j', 'k', 'kh', 'kr', 'l', 'll', 'm', 'n', 'p', 'pr', 'r', 'rh', 's', 'sk', 'sg', 'sm', 'sn', 'st', 't', 'th', 'thr', 'ty', 'v', 'y']; 
 let nm3 = ['bl', 'br', 'd', 'db', 'dbr', 'dd', 'ddg', 'dg', 'dl', 'dm', 'dr', 'dv', 'f', 'fd', 'fgr', 'fk', 'fl', 'fn', 'fr', 'fst', 'fv', 'g', 'gb', 'gd', 'gf', 'gg', 'ggv', 'gl', 'gn', 'gr', 'gss', 'gv', 'k', 'kk', 'l', 'lb', 'lc', 'ld', 'ldr', 'lf', 'lfr', 'lg', 'lgr', 'lk', 'll', 'llg', 'llk', 'llv', 'lm', 'ln', 'lp', 'lr', 'ls', 'lsk', 'lsn', 'lst', 'lsv', 'lt', 'lv', 'm', 'md', 'mk', 'ml', 'mm', 'ms', 'n', 'nb', 'nd', 'ndr', 'ng', 'nl', 'nn', 'nng', 'nr', 'nsk', 'nt', 'nv', 'nw', 'p', 'pl', 'pp', 'pr', 'r', 'rb', 'rd', 'rdg', 'rf', 'rg', 'rgr', 'rk', 'rkm', 'rl', 'rls', 'rm', 'rn', 'rng', 'rngr', 'rnh', 'rnk', 'rns', 'rnv', 'rr', 'rst', 'rt', 'rth', 'rtm', 'rv', 's', 'sb', 'sbr', 'sg', 'sgr', 'sk', 'sl', 'sm', 'sn', 'sr', 'ssk', 'st', 'stm', 'str', 'sv', 't', 'tg', 'th', 'thg', 'thn', 'thr', 'thv', 'tm', 'tr', 'tt', 'ttf', 'tv', 'v', 'yv', 'z', 'zg', 'zl', 'zn']; 
@@ -73,7 +127,8 @@ export function barbarian(tp) {
   return names;
 }
 
-const originCountries = ['Rome', 'Gaul', 'Germania', 'Greece', 'Brittania', 'Egypt', 'Hispania', 'Numidia'];
+// total exp required at each level, 1-50. This is based on an exponential growth curve
+export const levelSteps = [0, 105, 315, 631, 1056, 1605, 2277, 3066, 3988, 5035, 6211, 7539, 8990, 10563, 12277, 14160, 16189, 18403, 20774, 23315, 26004, 28974, 32108, 35425, 38946, 42705, 46721, 51104, 55666, 60568, 65696, 71183, 77088, 83329, 89857, 96768, 104184, 112000, 120185, 128761, 137815, 147245, 157325, 168075, 179515, 191665, 204545, 218175, 232575, 248255];
 
 const germaniaCities = ['Xanten', 'Neuss', 'Cologne', 'Bonn', 'Andernach', 'Koblenz', 'Trier', 'Mainz', 'Worms', 'Speyer', 'Augsburg', 'Allgäu'];
 const romanCities = ['Roma', 'Ariminum', 'Belum', 'Placentia', 'Mod', 'Salernum', 'Bononia', 'Forum Livii', 'Regium Lepidi', 'Aquileia', 'Massa', 'Pistoria', 'Florentia', 'Pons Drusi'];

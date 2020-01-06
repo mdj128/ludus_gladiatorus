@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { getRandomInt } from './statHelpers';
+import { generateGladiator } from './gladiatorGen';
 
 export const getNewLudus = () => {
   const ludus = { ...Ludus };
@@ -8,22 +9,38 @@ export const getNewLudus = () => {
 
 export const generateCalendar = (ludus, numDays) => {
   const avgGladiatorLvl = ludus.gladiators.length > 0 ? _.sumBy(ludus.gladiators, 'lvl') / ludus.gladiators.length : 1;
+  const minGladiatorLvl = ludus.gladiators.length > 0 ? _.minBy(ludus.gladiators, 'lvl') / ludus.gladiators.length : 1;
+  const maxGladiatorLvl = ludus.gladiators.length > 0 ? _.maxBy(ludus.gladiators, 'lvl') / ludus.gladiators.length : 1;
   for (let i = 0; i < numDays; i++) {
     const day = { ... Day };
     day.id = ludus.days.length ? (ludus.days[ludus.days.length - 1].id + 1) % 7 : 1;
     const numEvents = getRandomInt(1, 4);
     for (let j = 0; j < numEvents; j++) {
       const event = { ...Event };
-      const numMatches = getRandomInt(1, 5);
-      for (let k = 0; k < numMatches; k++) {
+      const numMatches = getRandomInt(2, 5);
+      
+      // const lowEndMatch = generateMatch(ludus, lvl);
 
+      for (let k = 0; k < numMatches; k++) {
+        
       }
     }
   }
 };
 
-// Generates a random gladiator within the given bounds
-export const generateGladiator = (minLvl, maxLvl) => {
+export const generateMatch = (ludus, minLvl, maxLvl) => {
+  const match = { ...Match };
+  match.opponent = generateGladiator(minLvl, maxLvl);
+  match.winPayout = 10;
+
+  // opponent       : {}, // Gladiator to fight against. Note: it might be fun to not auto-generate these every time, but keep a running collection of them that level up over time so that the player regularly sees them as they level up their ludus.
+  // contender      : null, // Player assigned gladiator to fight
+  // winPayout      : 10,
+  // losePayout     : 5,
+  // winExp         : 5,
+  // loseExp        : 2,
+  // sacrificePayout: 20, // You can choose to sacrifice a gladiator in a match, payout is high, but you lose a gladiator
+  // prestigeGain   : 5, // If you win this is how much prestige you'll gain.
 
 };
 
@@ -40,7 +57,7 @@ const Ludus = {
   nutritionLevel      : 1, // Meager, Simple, Standard, Fulfilling, Extravagant. Affects daily cost, improves morale, training, recovery, etc.
   inventory           : [], // extra items that are not equipped on anyone
   calendar            : {},
-  market              : {},  
+  market              : {},
 };
 
 const Calendar = {
@@ -56,10 +73,10 @@ const Day = {
 // Each day on the calendar has a chance for gladiator events. These are generated at the beginning of each week.
 // Each has an entry fee, once paid you can sign up as many of your gladiators as you want to
 const Event = {
-  type            : '', // tbd?
-  availableMatches: [], // list of open matches that can be signed up for
-  level           : 1, // dictates level of generated opponent, entry fee, payout, etc.
-  entryFee        : 20,
+  type    : '', // tbd?
+  matches : [], // list of open matches that can be signed up for
+  level   : 1, // dictates level of generated opponent, entry fee, payout, etc.
+  entryFee: 20,
 };
 
 const Match = {
@@ -136,3 +153,10 @@ const Weapon = {
   sellValue: 3,
   minLvl   : 1,
 };
+
+// total exp required at each level, 1-50. This is based on an exponential growth curve
+export const levelSteps = [0, 105, 315, 631, 1056, 1605, 2277, 3066, 3988, 5035, 6211, 7539, 8990, 10563, 12277, 14160, 16189, 18403, 20774, 23315, 26004, 28974, 32108, 35425, 38946, 42705, 46721, 51104, 55666, 60568, 65696, 71183, 77088, 83329, 89857, 96768, 104184, 112000, 120185, 128761, 137815, 147245, 157325, 168075, 179515, 191665, 204545, 218175, 232575, 248255];
+
+// exp gained for defeating a gladiator at each level, 1-50
+// this is scaled to require 2 even con wins to go from level 1 to 2, all the way up to 14 even con wins to go from 49 to 50
+export const expGained = [53, 70, 105, 106, 137, 168, 158, 184, 209, 235, 221, 242, 262, 286, 269, 290, 316, 339, 318, 336, 371, 392, 415, 391, 418, 446, 487, 507, 490, 513, 549, 591, 624, 593, 628, 674, 711, 744, 715, 755, 786, 840, 896, 880, 935, 991, 1048, 1108, 1120, 1167];
