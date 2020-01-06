@@ -26,6 +26,7 @@ export const generateGladiator = (minLvl, maxLvl) => {
   // randomly shuffle the generated stats
   let [str, sta, dex, agi] = knuthShuffle([stat1, stat2, stat3, stat4]);
 
+  // TODO: Want to weight stats based on origin, e.g. str and sta are top stats for germania (barbarian)?
   gladiator.str = str;
   gladiator.sta = sta;
   gladiator.dex = dex;
@@ -130,6 +131,7 @@ export function barbarian(tp) {
 // total exp required at each level, 1-50. This is based on an exponential growth curve
 export const levelSteps = [0, 105, 315, 631, 1056, 1605, 2277, 3066, 3988, 5035, 6211, 7539, 8990, 10563, 12277, 14160, 16189, 18403, 20774, 23315, 26004, 28974, 32108, 35425, 38946, 42705, 46721, 51104, 55666, 60568, 65696, 71183, 77088, 83329, 89857, 96768, 104184, 112000, 120185, 128761, 137815, 147245, 157325, 168075, 179515, 191665, 204545, 218175, 232575, 248255];
 
+// Could include a little bio about where the gladiator was originally from.
 const germaniaCities = ['Xanten', 'Neuss', 'Cologne', 'Bonn', 'Andernach', 'Koblenz', 'Trier', 'Mainz', 'Worms', 'Speyer', 'Augsburg', 'Allgäu'];
 const romanCities = ['Roma', 'Ariminum', 'Belum', 'Placentia', 'Mod', 'Salernum', 'Bononia', 'Forum Livii', 'Regium Lepidi', 'Aquileia', 'Massa', 'Pistoria', 'Florentia', 'Pons Drusi'];
 const frenchCities = ['Calais', 'Paris', 'Bordeaux', 'Metz', 'Toulon', 'Bourges', 'Avignon', 'Marseille', 'Argentoratum', 'Divodurum', 'Vesontio'];

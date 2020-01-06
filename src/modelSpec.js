@@ -2,6 +2,44 @@ import _ from 'lodash';
 import { getRandomInt } from './statHelpers';
 import { generateGladiator } from './gladiatorGen';
 
+// It is the year 50BC. 21 years ago, with discipline breaking down, Spartacus brought 
+// the remaining of his army on the oncoming legions. In his last stand, the Battle of the Siler River the vast majority of his men 
+// were killed on the battlefield. All ancient historians stated that Spartacus was also killed in the same battle. However, his body
+// was never found...
+
+// Back in Rome, and throughout the Empire, gladiator games continue to be extremely popular, and lucrative for those
+// that choose to risk everything they have on running a Ludus. You've led a mediocre life as a merchant, but have always
+// had a passion for the games, and although it was many decades ago your memories of Spartacus in the arena are still as vivid
+// as if they had happened just yesterday. With no family or any legacy to leave behind, you yearn for more, some higher purpose in life. 
+// As fate would have it, one day you see a papyrus scroll advertising an old abandoned Ludus for sale. Your life savings are just enough
+// to make the purchase. Before you can change your mind, you track down the seller and make the purchase. This is what you were meant
+// to be. this is when your life truly begins.
+
+// As you look around the Ludus you've purchased, your gut sinks in realization that you may have just made the worst mistake of your life.
+// Just then, you hear a pounding at the front gates. You rush and open them up, and in front of you stands a tall muscular man.
+// "Dominus! Are you the owner of this Ludus?"
+// "Yes.." you reply hesitantly.
+// "I have travelled here in search of glory. None of the other Domini will take me. I have trained hard, this is what I was meant to be.
+// will you take me as a gladiator?"
+// You look the man over. You need gladiators. How were you even going to be able to do this?
+// "Yes!" you sputter. "Yes, you may join. But you should know, you will be my first gladiator. And I will need your loyalty. Together
+// we will do many great things."
+
+// Enter starter gladiator creation mode: level 1, 12 stat points to spend. Can choose portrait, origin, etc.
+
+// After creation finishes, enter dialog:
+// Gladiator: "By the way, I didn't even ask, what is your name, Dominus?"
+// Prompt to enter name, which will become house of [x] on the main Ludus screen
+
+// Gladiator: "It's great to meet you. Thank you for believing in me. I've found some old equipment down here in the training
+// storage room. Just tell me what to do. I am ready to fight for our house!"
+
+
+// This file will contain methods and object specs from the Ludus (contains everything) all the way down to its gladiators, their stats, their items, etc.
+// Every object in the hierarchy should contain basic properties only, no functions or circular references. That way,
+// the ludus object can be serialized as json. Doing this all by hand right now, eventually we could use redux, react context,
+// etc. Just trying to keep it simple as long as possible. Serialization could just go into local storage to start.
+
 export const getNewLudus = () => {
   const ludus = { ...Ludus };
   return ludus;
@@ -18,9 +56,7 @@ export const generateCalendar = (ludus, numDays) => {
     for (let j = 0; j < numEvents; j++) {
       const event = { ...Event };
       const numMatches = getRandomInt(2, 5);
-      
       // const lowEndMatch = generateMatch(ludus, lvl);
-
       for (let k = 0; k < numMatches; k++) {
         
       }
@@ -45,7 +81,7 @@ export const generateMatch = (ludus, minLvl, maxLvl) => {
 };
 
 const Ludus = {
-  name                : 'My Ludus', 
+  name                : 'Batiatus', // displayed as House of [dominus]
   prestige            : 1, // increase by winning matches, paying off politicians/dignitaries
   gladiators          : [], 
   capacity            : 5, // maybe max starts out at 5, and you can upgrade to hold more gladiators
@@ -123,19 +159,19 @@ const Gladiator = {
   origin          : '',
   formerOccupation: '', // could be blacksmith, farmer, soldier, etc. impacts stats maybe?
   specialization  : '', // weapon specialization, gives bonus if they use the right one?
-  lvl             : 1,
-  exp             : 0, // Is lvl prop required if this determines it?
-  str             : 5,
-  sta             : 5,
-  dex             : 5,
-  agi             : 5,
-  int             : 5, // maybe affects levelling speed?
+  lvl             : 1, // this is actually never going to be here, just going to calculate based on how much exp and the level steps
+  exp             : 0, // 
+  str             : 3, // level 1 starts with 12 stat points.
+  sta             : 3,
+  dex             : 2,
+  agi             : 4,
+  int             : 5, // maybe affects levelling speed? not used anywhere yet
   weapon          : {},
   head            : {},
   chest           : {},
   legs            : {},
-  restDays        : 0, // after a match, gladiator needs x number of days of rest before he can fight again
-  morale          : 5, // maybe 1-10? drops after loss. can increase with wine/women/food/etc.
+  restDays        : 0, // after a match, gladiator needs x number of days of rest before he can fight or train again
+  morale          : 5, // maybe 1-10? drops after loss, increases after win. can also increase with wine/women/food/etc. TBD - needs factored into combat, maybe exp gain too
   dailyAction     : '', // what the gladiator is assigned to do today (rest, train, fight in a match)
 };
 
@@ -147,16 +183,18 @@ const Armor = {
 };
 
 const Weapon = {
-  damage   : 5,
-  name     : 'Wooden Sword',
-  cost     : 5,
-  sellValue: 3,
-  minLvl   : 1,
+  damage     : 5,
+  name       : 'Wooden Sword',
+  cost       : 5,
+  sellValue  : 3,
+  requiredLvl: 1, // might need to restrict weapons by min level? otherwise could be OP to hand a low level gladiator a super high level sword
 };
 
-// total exp required at each level, 1-50. This is based on an exponential growth curve
-export const levelSteps = [0, 105, 315, 631, 1056, 1605, 2277, 3066, 3988, 5035, 6211, 7539, 8990, 10563, 12277, 14160, 16189, 18403, 20774, 23315, 26004, 28974, 32108, 35425, 38946, 42705, 46721, 51104, 55666, 60568, 65696, 71183, 77088, 83329, 89857, 96768, 104184, 112000, 120185, 128761, 137815, 147245, 157325, 168075, 179515, 191665, 204545, 218175, 232575, 248255];
+// ways to gain exp: Fighting in the arena. A win gets you from the list below. A loss, maybe 1/2 or 1/3?
+// note: there should be a penalty for winning against a significantly lower opponent, and a bonus for beating a higher level opponent
 
 // exp gained for defeating a gladiator at each level, 1-50
 // this is scaled to require 2 even con wins to go from level 1 to 2, all the way up to 14 even con wins to go from 49 to 50
+// it's not exactly linear, but close (slightly steeper in earlier levels, more shallow in later levels)
+// this pairs with the exponential exp required per level
 export const expGained = [53, 70, 105, 106, 137, 168, 158, 184, 209, 235, 221, 242, 262, 286, 269, 290, 316, 339, 318, 336, 371, 392, 415, 391, 418, 446, 487, 507, 490, 513, 549, 591, 624, 593, 628, 674, 711, 744, 715, 755, 786, 840, 896, 880, 935, 991, 1048, 1108, 1120, 1167];
