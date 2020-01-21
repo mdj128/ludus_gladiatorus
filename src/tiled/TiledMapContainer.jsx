@@ -3,20 +3,29 @@ import React, {
   useImperativeHandle,
   forwardRef,
   useState,
+  useRef,
 } from 'react';
 
-import { Container, Graphics, useApp } from '@inlet/react-pixi';
+import { Container, Graphics, useApp, useTick } from '@inlet/react-pixi';
 import tileMapLoader from './tiledMapLoader';
 import TileSet from './TileSet';
 import TileLayer from './TileLayer';
 import ImageLayer from './ImageLayer';
 
-export default forwardRef(({ tiledPath, x, y, scale }, ref) => {
+export default forwardRef(({ tiledPath, containerProps, children, onTick }, ref) => {
   const app = useApp();
   const [renderedOutput, setRenderedOutput] = useState(null);
   const [map, setMap] = useState(null);
+  const containerRef = useRef(null);
+
+  if (onTick) {
+    useTick(onTick);
+  }
+  
   useImperativeHandle(ref, () => ({
     map,
+    container: containerRef.current,
+    
   }));
   useEffect(() => {
     app.loader
@@ -59,8 +68,9 @@ export default forwardRef(({ tiledPath, x, y, scale }, ref) => {
   }, [tiledPath]);
 
   return (
-    <Container scale={scale} x={x} y={y} ref={ref}>
+    <Container {...containerProps} ref={containerRef}>
       {renderedOutput}
+      {children}
     </Container>
   );
 });

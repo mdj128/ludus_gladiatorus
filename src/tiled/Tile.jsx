@@ -36,13 +36,14 @@ function getTransform(horizontalFlip, verticalFlip, diagonalFlip) {
       anchor.y = 1;
       scale.y = 1;
       rotation = DEG_TO_RAD * 90;
-    }
-    if (verticalFlip) {
+    } else if (verticalFlip) {
       anchor.x = 1;
       scale.x = 1;
       anchor.y = 0;
       scale.y = 1;
       rotation = DEG_TO_RAD * -90;
+    } else {
+      rotation = DEG_TO_RAD * 180;
     }
   }
   return { anchor, scale, rotation };
