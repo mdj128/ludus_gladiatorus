@@ -3,15 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.4.0",
-    "@testing-library/user-event": "^7.2.1",
+    "@inlet/react-pixi": "^1.1.13",
     "highcharts": "^8.0.0",
     "highcharts-react-official": "^2.2.2",
     "lodash": "^4.17.15",
+    "pixi.js": "^4.8.9",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-scripts": "3.3.0",
     "react-slider": "^1.0.1"
   },
   "scripts": {
@@ -31,5 +29,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.4.0",
+    "@testing-library/user-event": "^7.2.1",
+    "node-sass": "^4.13.1",
+    "react-scripts": "3.3.0"
   }
 }

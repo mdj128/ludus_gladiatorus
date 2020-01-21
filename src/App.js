@@ -7,14 +7,21 @@ import { simulateBattle, getMaxHp } from './battle';
 import { generateGladiator } from './gladiatorGen';
 
 import GladiatorView from './components/Gladiator';
+import PixiContainer from './pixi/PixiContainer';
 
 function StatSlider(props) {
   const { name, val, update } = props;
   return (
     <tr>
       <td>{name}</td>
-      <input type="range" min="0" max="50" value={val} onClick={e => update(name, e.target.value)} 
-        onChange={e => update(name, e.target.value)} />
+      <input
+        type="range"
+        min="0"
+        max="50"
+        value={val}
+        onClick={e => update(name, e.target.value)}
+        onChange={e => update(name, e.target.value)}
+      />
       <td>{val}</td>
     </tr>
   );
@@ -22,7 +29,7 @@ function StatSlider(props) {
 
 function DamageDistributionChart(props) {
   const { name, data } = props;
-  const options = { 
+  const options = {
     chart: {
       height   : 300,
       width    : 450,
@@ -31,24 +38,42 @@ function DamageDistributionChart(props) {
     title: {
       text: `${name} damage distribution`,
     },
-    series: [{
-      name: 'Percent chance',
-      data,
-    }] };
+    series: [
+      {
+        name: 'Percent chance',
+        data,
+      },
+    ],
+  };
 
-  return (
-    <HighchartsReact
-      highcharts={Highcharts}
-      options={options}
-    />
-  );
+  return <HighchartsReact highcharts={Highcharts} options={options} />;
 }
 
 function App() {
-  const [p1, setp1] = useState({ name: 'Spartacus', lvl: 1, sta: 2, str: 3, dex: 2, agi: 3, weapon: 5, ac: 5 });
-  const [p2, setp2] = useState({ name: 'Gannicus', lvl: 1, sta: 2, str: 3, dex: 2, agi: 3, weapon: 5, ac: 5 });
-  
-  const [randomGladiator, setRandomGladiator] = useState(generateGladiator(1, 50));
+  const [p1, setp1] = useState({
+    name  : 'Spartacus',
+    lvl   : 1,
+    sta   : 2,
+    str   : 3,
+    dex   : 2,
+    agi   : 3,
+    weapon: 5,
+    ac    : 5,
+  });
+  const [p2, setp2] = useState({
+    name  : 'Gannicus',
+    lvl   : 1,
+    sta   : 2,
+    str   : 3,
+    dex   : 2,
+    agi   : 3,
+    weapon: 5,
+    ac    : 5,
+  });
+
+  const [randomGladiator, setRandomGladiator] = useState(
+    generateGladiator(1, 50)
+  );
   const [gladMin, setGladMin] = useState(1);
   const [gladMax, setGladMax] = useState(50);
 
@@ -96,7 +121,7 @@ function App() {
     for (let i = min; i < max; i++) {
       data[i] = 0;
     }
-    
+
     rawValues.forEach(v => {
       data[v]++;
     });
@@ -104,7 +129,7 @@ function App() {
     // Count number of samples at each increment
     let hc_data = [];
     for (const [key, val] of Object.entries(data)) {
-      hc_data.push({ 'x': parseFloat(key), 'y': val / rawValues.length });
+      hc_data.push({ x: parseFloat(key), y: val / rawValues.length });
     }
     return hc_data;
   };
@@ -112,7 +137,10 @@ function App() {
   // level 1 starts with 10 stat points and gains 3 per level.
   // given the current player's stats, this will return what level they would need to be to have those.
   const getLevel = p => {
-    return Math.ceil(1 + (Number(p.sta) + Number(p.str) + Number(p.dex) + Number(p.agi) - 10) / 3);
+    return Math.ceil(
+      1 +
+        (Number(p.sta) + Number(p.str) + Number(p.dex) + Number(p.agi) - 10) / 3
+    );
   };
 
   return (
@@ -129,8 +157,12 @@ function App() {
             <StatSlider name="sta" val={p1.sta} update={updatep1} />
             <StatSlider name="ac" val={p1.ac} update={updatep1} />
             <StatSlider name="weapon" val={p1.weapon} update={updatep1} />
-            <tr><td>{`hp: ${getMaxHp(p1)}`}</td></tr>
-            <tr><td>{`lvl: ${getLevel(p1)}`}</td></tr>
+            <tr>
+              <td>{`hp: ${getMaxHp(p1)}`}</td>
+            </tr>
+            <tr>
+              <td>{`lvl: ${getLevel(p1)}`}</td>
+            </tr>
           </td>
           <td>
             <tr>
@@ -142,8 +174,12 @@ function App() {
             <StatSlider name="sta" val={p2.sta} update={updatep2} />
             <StatSlider name="ac" val={p2.ac} update={updatep2} />
             <StatSlider name="weapon" val={p2.weapon} update={updatep2} />
-            <tr><td>{`hp: ${getMaxHp(p2)}`}</td></tr>
-            <tr><td>{`lvl: ${getLevel(p2)}`}</td></tr>
+            <tr>
+              <td>{`hp: ${getMaxHp(p2)}`}</td>
+            </tr>
+            <tr>
+              <td>{`lvl: ${getLevel(p2)}`}</td>
+            </tr>
           </td>
         </tr>
         <tr>
@@ -154,25 +190,20 @@ function App() {
         </tr>
         <tr>
           <td>
-            <DamageDistributionChart 
-              name={p1.name}
-              data={p1DmgData}
-            />
+            <DamageDistributionChart name={p1.name} data={p1DmgData} />
           </td>
           <td>
-            <DamageDistributionChart 
-              name={p2.name}
-              data={p2DmgData}
-            />
+            <DamageDistributionChart name={p2.name} data={p2DmgData} />
           </td>
         </tr>
       </table>
       <div>
         <button onClick={updateRandomGladiator}>New Gladiator</button>
-        <input onChange={e => setGladMin(e.target.value)} value={gladMin}/>
-        <input onChange={e => setGladMax(e.target.value)} value={gladMax}/>
+        <input onChange={e => setGladMin(e.target.value)} value={gladMin} />
+        <input onChange={e => setGladMax(e.target.value)} value={gladMax} />
       </div>
-      <GladiatorView {...randomGladiator}/>
+      <GladiatorView {...randomGladiator} />
+      <PixiContainer />
     </div>
   );
 }
