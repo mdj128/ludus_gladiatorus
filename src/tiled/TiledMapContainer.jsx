@@ -66,7 +66,7 @@ export default forwardRef(({ tiledPath, containerProps, children, onTick }, ref)
         setRenderedOutput(output);
       });
   }, [tiledPath]);
-
+  // TODO check out z index for children and come up with strategy to have overlap
   return (
     <Container {...containerProps} ref={containerRef}>
       {renderedOutput}
