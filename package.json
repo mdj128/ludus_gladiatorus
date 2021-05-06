@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@inlet/react-pixi": "^1.1.13",
-    "highcharts": "^8.0.0",
+    "highcharts": "^9.0.0",
     "highcharts-react-official": "^2.2.2",
     "lodash": "^4.17.15",
     "pixi.js": "^4.8.9",
