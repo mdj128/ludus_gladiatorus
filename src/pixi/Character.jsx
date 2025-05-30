@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 // import SpriteAnimated from './SpriteAnimated';
 import { Texture, SCALE_MODES, Rectangle } from 'pixi.js';
-import { Sprite } from '@inlet/react-pixi';
+import { Sprite } from '@pixi/react';
 
 // Extend this later to be more configurable
 // Also want to use SpriteAnimated here -- figure out why that isn't working
@@ -9,12 +9,14 @@ export default ({ x, y, imageUrl }) => {
   const [texture, setTexture] = useState(null);
   const spriteRef = useRef(null);
   useEffect(() => {
-    const baseTexture = Texture.fromImage(imageUrl, false, SCALE_MODES.NEAREST);
-    setTexture(new Texture(
-      baseTexture,
-      new Rectangle(0, 0, 40, 50)));
+    const baseTexture = Texture.from(imageUrl);
+    baseTexture.source.scaleMode = SCALE_MODES.NEAREST;
+    setTexture(new Texture({
+      source: baseTexture.source,
+      frame: new Rectangle(0, 0, 40, 50)
+    }));
 
-  }, []);
+  }, [imageUrl]);
 
   useEffect(() => {
     if (spriteRef && spriteRef.current) {

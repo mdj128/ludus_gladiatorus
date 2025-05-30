@@ -7,21 +7,23 @@ import { simulateBattle, getMaxHp } from './battle';
 import { generateGladiator } from './gladiatorGen';
 
 import GladiatorView from './components/Gladiator';
-import PixiContainer from './pixi/PixiContainer';
+// import PixiContainer from './pixi/PixiContainer';
 
 function StatSlider(props) {
   const { name, val, update } = props;
   return (
     <tr>
       <td>{name}</td>
-      <input
-        type="range"
-        min="0"
-        max="50"
-        value={val}
-        onClick={e => update(name, e.target.value)}
-        onChange={e => update(name, e.target.value)}
-      />
+      <td>
+        <input
+          type="range"
+          min="0"
+          max="50"
+          value={val}
+          onClick={e => update(name, e.target.value)}
+          onChange={e => update(name, e.target.value)}
+        />
+      </td>
       <td>{val}</td>
     </tr>
   );
@@ -146,56 +148,66 @@ function App() {
   return (
     <div>
       <table>
-        <tr>
-          <td>
-            <tr>
-              <td colSpan="3">{p1.name}</td>
-            </tr>
-            <StatSlider name="str" val={p1.str} update={updatep1} />
-            <StatSlider name="dex" val={p1.dex} update={updatep1} />
-            <StatSlider name="agi" val={p1.agi} update={updatep1} />
-            <StatSlider name="sta" val={p1.sta} update={updatep1} />
-            <StatSlider name="ac" val={p1.ac} update={updatep1} />
-            <StatSlider name="weapon" val={p1.weapon} update={updatep1} />
-            <tr>
-              <td>{`hp: ${getMaxHp(p1)}`}</td>
-            </tr>
-            <tr>
-              <td>{`lvl: ${getLevel(p1)}`}</td>
-            </tr>
-          </td>
-          <td>
-            <tr>
-              <td colSpan="3">{p2.name}</td>
-            </tr>
-            <StatSlider name="str" val={p2.str} update={updatep2} />
-            <StatSlider name="dex" val={p2.dex} update={updatep2} />
-            <StatSlider name="agi" val={p2.agi} update={updatep2} />
-            <StatSlider name="sta" val={p2.sta} update={updatep2} />
-            <StatSlider name="ac" val={p2.ac} update={updatep2} />
-            <StatSlider name="weapon" val={p2.weapon} update={updatep2} />
-            <tr>
-              <td>{`hp: ${getMaxHp(p2)}`}</td>
-            </tr>
-            <tr>
-              <td>{`lvl: ${getLevel(p2)}`}</td>
-            </tr>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <div>{`${p1.name} win: ${battleResult[p1.name]}%`}</div>
-            <div>{`${p2.name} win: ${battleResult[p2.name]}%`}</div>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <DamageDistributionChart name={p1.name} data={p1DmgData} />
-          </td>
-          <td>
-            <DamageDistributionChart name={p2.name} data={p2DmgData} />
-          </td>
-        </tr>
+        <tbody>
+          <tr>
+            <td>
+              <table>
+                <tbody>
+                  <tr>
+                    <td colSpan="3">{p1.name}</td>
+                  </tr>
+                  <StatSlider name="str" val={p1.str} update={updatep1} />
+                  <StatSlider name="dex" val={p1.dex} update={updatep1} />
+                  <StatSlider name="agi" val={p1.agi} update={updatep1} />
+                  <StatSlider name="sta" val={p1.sta} update={updatep1} />
+                  <StatSlider name="ac" val={p1.ac} update={updatep1} />
+                  <StatSlider name="weapon" val={p1.weapon} update={updatep1} />
+                  <tr>
+                    <td colSpan="3">{`hp: ${getMaxHp(p1)}`}</td>
+                  </tr>
+                  <tr>
+                    <td colSpan="3">{`lvl: ${getLevel(p1)}`}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td>
+              <table>
+                <tbody>
+                  <tr>
+                    <td colSpan="3">{p2.name}</td>
+                  </tr>
+                  <StatSlider name="str" val={p2.str} update={updatep2} />
+                  <StatSlider name="dex" val={p2.dex} update={updatep2} />
+                  <StatSlider name="agi" val={p2.agi} update={updatep2} />
+                  <StatSlider name="sta" val={p2.sta} update={updatep2} />
+                  <StatSlider name="ac" val={p2.ac} update={updatep2} />
+                  <StatSlider name="weapon" val={p2.weapon} update={updatep2} />
+                  <tr>
+                    <td colSpan="3">{`hp: ${getMaxHp(p2)}`}</td>
+                  </tr>
+                  <tr>
+                    <td colSpan="3">{`lvl: ${getLevel(p2)}`}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td colSpan="2">
+              <div>{`${p1.name} win: ${battleResult[p1.name]}%`}</div>
+              <div>{`${p2.name} win: ${battleResult[p2.name]}%`}</div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <DamageDistributionChart name={p1.name} data={p1DmgData} />
+            </td>
+            <td>
+              <DamageDistributionChart name={p2.name} data={p2DmgData} />
+            </td>
+          </tr>
+        </tbody>
       </table>
       <div>
         <button onClick={updateRandomGladiator}>New Gladiator</button>
@@ -203,7 +215,7 @@ function App() {
         <input onChange={e => setGladMax(e.target.value)} value={gladMax} />
       </div>
       <GladiatorView {...randomGladiator} />
-      <PixiContainer />
+      {/* <PixiContainer /> */}
     </div>
   );
 }

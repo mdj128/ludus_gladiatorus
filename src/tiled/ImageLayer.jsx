@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Sprite } from '@inlet/react-pixi';
+import { Container, Sprite } from '@pixi/react';
 
 export default ({ layer, route }) => <Container alpha={layer.opacity}>
   {layer.image && layer.image.source && <Sprite 

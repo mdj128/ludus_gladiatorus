@@ -1,9 +1,9 @@
-import { extras } from 'pixi.js';
-import { PixiComponent } from '@inlet/react-pixi';
+import { AnimatedSprite } from 'pixi.js';
+import { PixiComponent } from '@pixi/react';
 
 export default PixiComponent('SpriteAnimated', {
   create: ({ textures, anchor, scale, rotation, x, y, animationSpeed, isPlaying }) => {
-    const animatedSprite = new extras.AnimatedSprite(textures, true);
+    const animatedSprite = new AnimatedSprite(textures, true);
     animatedSprite.anchor = anchor;
     animatedSprite.scale = scale;
     animatedSprite.rotation = rotation;
