@@ -6,7 +6,7 @@ import React, {
   useRef,
 } from 'react';
 
-import { Container, Graphics, useApp, useTick } from '@inlet/react-pixi';
+import { Container, Graphics, useApp, useTick } from '@pixi/react';
 import tileMapLoader from './tiledMapLoader';
 import TileSet from './TileSet';
 import TileLayer from './TileLayer';
@@ -28,10 +28,13 @@ export default forwardRef(({ tiledPath, containerProps, children, onTick }, ref)
     
   }));
   useEffect(() => {
-    app.loader
-      .add(tiledPath)
-      .load(async (loader, { [tiledPath]: resource }) => {
-        await tileMapLoader(loader, resource);
+    const loadMap = async () => {
+      try {
+        const response = await fetch(tiledPath);
+        const text = await response.text();
+        const resource = { data: text, url: tiledPath };
+        
+        await tileMapLoader(null, resource);
         const { route, data } = resource;
         setMap(data);
         const tileSets = data.tileSets.map(
@@ -42,29 +45,34 @@ export default forwardRef(({ tiledPath, containerProps, children, onTick }, ref)
           <React.Fragment>
             <Graphics
               draw={background => {
-                background.beginFill(0xff0000, 0);
-                background.drawRect(
+                background.clear();
+                background.rect(
                   0,
                   0,
                   (data.width || 0) * (data.tileWidth || 0),
                   (data.height || 0) * (data.tileHeight || 0)
                 );
-                background.endFill();
+                background.fill({color: 0xff0000, alpha: 0});
               }}
             />
 
             {data.layers.map(layerData =>
               layerData.type === 'tile' ? (
-                <TileLayer layer={layerData} tileSets={tileSets} />
+                <TileLayer key={layerData.id || layerData.name} layer={layerData} tileSets={tileSets} />
               ) : layerData.type === 'image' ? (
-                <ImageLayer layer={layerData} route={route} />
+                <ImageLayer key={layerData.id || layerData.name} layer={layerData} route={route} />
               ) : null
             )}
           </React.Fragment>
         );
 
         setRenderedOutput(output);
-      });
+      } catch (error) {
+        console.error('Failed to load tiled map:', error);
+      }
+    };
+    
+    loadMap();
   }, [tiledPath]);
   // TODO check out z index for children and come up with strategy to have overlap
   return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Tile from './Tile';
-import { Container } from '@inlet/react-pixi';
+import { Container } from '@pixi/react';
 
 function findTileSet(gid, tileSets) {
   let tileset;

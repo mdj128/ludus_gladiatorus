@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 
-import { Stage, useTick, AppConsumer } from '@inlet/react-pixi';
+import { Stage, useTick, AppConsumer } from '@pixi/react';
 
 import './pixi.scss';
 import TiledMapContainer from '../tiled/TiledMapContainer';

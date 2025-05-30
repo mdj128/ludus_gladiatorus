@@ -69,7 +69,7 @@ export default ({
   return (
     <SpriteAnimated
       textures={textures}
-      anchor={new ObservablePoint(() => {}, null, anchor.x, anchor.y)}
+      anchor={anchor}
       scale={scale}
       rotation={rotation}
       x={x}
